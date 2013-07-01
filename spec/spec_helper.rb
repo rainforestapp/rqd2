@@ -19,14 +19,17 @@ RSpec.configure do |config|
   end
 
   config.before(:each) do
-    connection = Rqd2.connection
-    connection.exec("BEGIN")
+    Rqd2.connection.exec "TRUNCATE TABLE rqd2_jobs"
   end
+  # config.before(:each) do
+  #   connection = Rqd2.connection
+  #   connection.exec("BEGIN")
+  # end
 
-  config.after(:each) do
-    connection = Rqd2.connection
-    connection.exec("ROLLBACK")
-  end
+  # config.after(:each) do
+  #   connection = Rqd2.connection
+  #   connection.exec("ROLLBACK")
+  # end
 
   config.filter_run_excluding(performance: true) unless ENV['PERFORMANCE'] != nil
   config.treat_symbols_as_metadata_keys_with_true_values = true
