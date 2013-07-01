@@ -5,10 +5,6 @@ module Rqd2
 
     def run_job(queue = nil)
       Rqd2.dequeue(queue) do |job|
-        begin
-          # Return if there are no jobs to run
-          return :no_jobs unless job
-
           args = JSON.parse(job['args'])
 
           Kernel.const_get(job['klass']).send(:perform, *args)
