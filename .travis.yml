@@ -7,6 +7,9 @@ rvm:
   - ruby-head
   - jruby-head
 
+before_script:
+  - psql -c 'create database rqd2_test;' -U postgres
+
 env:
   global:
     - "JRUBY_OPTS=-Xcext.enabled=true"
