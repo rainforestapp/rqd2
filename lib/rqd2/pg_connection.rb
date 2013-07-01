@@ -1,3 +1,5 @@
+require 'pg'
+
 module Rqd2
   class PgConnection
 
@@ -13,7 +15,8 @@ module Rqd2
       @db = PG::Connection.new(
         :host => '127.0.0.1',
         :dbname => 'rqd2',
-        :password => 'xxx'
+        :user => 'postgres',
+        :password => ''
       )
     end
 
