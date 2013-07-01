@@ -35,6 +35,4 @@ describe Rqd2 do |d|
       Rqd2.dequeue.should == nil
     end
   end
-
-
 end

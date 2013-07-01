@@ -2,6 +2,8 @@ require "rqd2/version"
 require "json/ext"
 require "rqd2/pg_connection"
 require "rqd2/job"
+require "rqd2/worker"
+
 
 module Rqd2
   def self.connection
@@ -9,7 +11,7 @@ module Rqd2
   end
 
   def self.enqueue(klass, *args)
-    connection.exec "INSERT INTO rqd2_jobs(method, args) VALUES('#{klass.to_s}', '#{args.to_json}')"
+    connection.exec "INSERT INTO rqd2_jobs(klass, args) VALUES('#{klass.to_s}', '#{args.to_json}')"
   end
 
   def self.size
