@@ -45,7 +45,8 @@ module Rqd2
       job_id = job['id']
 
       begin
-        connection.exec("UPDATE rqd2_jobs SET locked_at = NOW() WHERE id = #{job_id}")
+        connection.exec("UPDATE rqd2_jobs SET locked_at = NOW(), locked_by = #{$$} WHERE id = #{job_id}")
+        job['locked_by'] = $$ # Mark as locked by the current process id
 
         result = yield job
 
@@ -67,7 +68,6 @@ module Rqd2
   end
 
   def self.requeue_job(hash = {})
-    puts hash.inspect
     raise "Missing queue name" unless hash['q_name']
     raise "Missing attempts" unless hash['attempts']
     raise "Missing klass" unless hash['klass']
