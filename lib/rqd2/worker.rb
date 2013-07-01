@@ -12,7 +12,7 @@ module Rqd2
 
       args = JSON.parse(job['args'])
 
-      Kernel.const_get(job['method']).send(:perform, *args)
+      Kernel.const_get(job['klass']).send(:perform, *args)
 
       return :success
     rescue Exception # Name Later
