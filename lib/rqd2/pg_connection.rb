@@ -10,12 +10,7 @@ module Rqd2
         return
       end
 
-      @db = PG::Connection.new(
-        host:     '127.0.0.1',
-        dbname:   'rqd2_test',
-        user:     'postgres',
-        password: ''
-      )
+      @db = PG::Connection.new(normalize_db_url(db_url))
     end
 
     def setup_schema
@@ -32,6 +27,27 @@ module Rqd2
 
     def exec(sql)
       @db.exec sql
+    end
+
+    def normalize_db_url(url)
+      host = url.host
+      host = host.gsub(/%2F/i, '/') if host
+
+      {
+       host: host, # host or percent-encoded socket path
+       port: url.port || 5432,
+       dbname: url.path.gsub("/",""), # database name
+       user: url.user,
+       password: url.password
+      }
+    end
+
+    def db_url
+      return @db_url if @db_url
+      url = ENV["QC_DATABASE_URL"] ||
+            ENV["DATABASE_URL"]    ||
+            raise(ArgumentError, "missing QC_DATABASE_URL or DATABASE_URL")
+      @db_url = URI.parse(url)
     end
   end
 end
