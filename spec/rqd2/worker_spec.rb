@@ -59,9 +59,10 @@ describe Rqd2::Worker do |d|
         Rqd2::Worker.new.run_job.should == :failure
         Rqd2::Worker.new.run_job.should == :failure
 
-        job = Rqd2.dequeue
-        job.should be_a(Hash)
-        job['attempts'].to_i.should == 2
+        Rqd2.dequeue { |job|
+          job.should be_a(Hash)
+          job['attempts'].to_i.should == 2
+        }
       end
     end
 

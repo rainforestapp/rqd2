@@ -64,7 +64,6 @@ module Rqd2
   end
 
   def self.requeue_job(hash = {})
-    puts hash.inspect
     raise "Missing queue name" unless hash['q_name']
     raise "Missing attempts" unless hash['attempts']
     raise "Missing klass" unless hash['klass']
