@@ -43,7 +43,7 @@ describe Rqd2 do |d|
       end
 
       it "executes a block thats passed" do
-        expect { |b| Rqd2.dequeue }.to yield_control
+        expect { |b| Rqd2.dequeue &b }.to yield_control
       end
 
       it "process next job in a specific queue" do
