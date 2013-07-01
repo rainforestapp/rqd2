@@ -1,4 +1,13 @@
 class MyJob
+  @queue = :test
+
+  def self.perform(a, b, c)
+  end
+end
+
+class MyOtherJob
+  @queue = :test2
+
   def self.perform(a, b, c)
   end
 end
@@ -16,6 +25,18 @@ describe Rqd2::Worker do |d|
 
       it "process the next job in the queue" do
         Rqd2::Worker.new.run_job.should == :success
+      end
+
+      it "process the next job in a specific queue" do
+        queue = MyJob.instance_variable_get(:@queue)
+        Rqd2::Worker.new.run_job(queue).should == :success
+      end
+
+      it "process the next job in a specific queue where there are no jobs in the queue specified to run" do
+        Rqd2.size.should == 1
+
+        queue = MyOtherJob.instance_variable_get(:@queue)
+        Rqd2::Worker.new.run_job(queue).should == :no_jobs
       end
 
       it "calls the perform method with the correct arguments" do

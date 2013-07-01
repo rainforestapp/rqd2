@@ -4,8 +4,8 @@ module Rqd2
     def initialize
     end
 
-    def run_job()
-      job = Rqd2.dequeue
+    def run_job(queue = nil)
+      job = Rqd2.dequeue(queue)
 
       # Return if there are no jobs to run
       return :no_jobs unless job
