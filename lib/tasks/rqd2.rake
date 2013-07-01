@@ -13,4 +13,14 @@ namespace :rqd2 do
 
     Rqd2::Worker.new.start(nil, lambda { stop })
   end
+
+  desc "Install"
+  task :install do
+    Rqd2::PgConnection.new().setup_schema()
+  end
+
+  desc "Remove"
+  task :remove do
+    Rqd2::PgConnection.new().drop_schema()
+  end
 end
