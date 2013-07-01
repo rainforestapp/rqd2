@@ -1,6 +1,12 @@
 require 'rqd2'
 
-class MyJob; ; end;
+class MyJob
+  @queue = :test
+end
+
+class MyOtherJob
+  @queue = :test2
+end
 
 RSpec.configure do |config|
   config.before(:suite) do

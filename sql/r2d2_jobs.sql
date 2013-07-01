@@ -6,6 +6,7 @@ CREATE UNLOGGED TABLE rqd2_jobs (
 
 CREATE TABLE rqd2_jobs (
   id          bigserial PRIMARY KEY,
+  q_name      varchar(255) not null,
   klass       text not null check (length(klass) > 0),
   args        json not null,
   enqueued_at timestamp without time zone NOT NULL DEFAULT NOW(),
