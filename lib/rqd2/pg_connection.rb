@@ -31,7 +31,6 @@ module Rqd2
     end
 
     def exec(sql)
-      puts sql.inspect
       @db.exec sql
     end
   end

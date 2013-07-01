@@ -54,6 +54,7 @@ module Rqd2
       rescue Exception => e
         connection.exec("UPDATE rqd2_jobs SET failed_at = NOW() WHERE id = #{job_id}")
         Rqd2.logger.error e.message
+        Rqd2.requeue_job(job)
         result = :failure
       end
 
