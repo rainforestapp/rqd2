@@ -37,6 +37,7 @@ module Rqd2
       queue = "AND q_name IN (#{queue})"
     end
 
+    connection.exec("BEGIN")
     connection.exec("SAVEPOINT rqd2_dequeue")
     job = connection.exec("SELECT * FROM rqd2_jobs WHERE locked_at IS NULL #{queue} LIMIT 1 FOR UPDATE").first
 
@@ -56,9 +57,11 @@ module Rqd2
         Rqd2.logger.error e.message
         Rqd2.requeue_job(job)
         result = :failure
+      ensure
+        connection.exec("RELEASE SAVEPOINT rqd2_dequeue")
+        connection.exec("COMMIT")
       end
 
-      connection.exec("RELEASE SAVEPOINT rqd2_dequeue")
       result
     else
       return :no_jobs
