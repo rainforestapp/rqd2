@@ -15,16 +15,32 @@ module Rqd2
   end
 
   def self.size
-    connection.exec("SELECT COUNT(1) as job_count FROM rqd2_jobs").first['job_count'].to_i
+    connection.exec("SELECT COUNT(1) as job_count FROM rqd2_jobs WHERE locked_at IS NULL").first['job_count'].to_i
   end
 
   def self.dequeue
-    job = connection.exec("SELECT * FROM rqd2_jobs LIMIT 1").first
-    return unless job
+    connection.exec("SAVEPOINT rqd2_dequeue")
+    job = connection.exec("SELECT * FROM rqd2_jobs WHERE locked_at IS NULL LIMIT 1 FOR UPDATE").first
 
-    job_id = job['id']
+    if job
+      job_id = job['id']
 
-    connection.exec("DELETE FROM rqd2_jobs WHERE id = #{job_id}")
-    job
+      begin
+        connection.exec("UPDATE rqd2_jobs SET locked_at = NOW() WHERE id = #{job_id}")
+
+        result = block.call(job)
+
+        connection.exec("DELETE FROM rqd2_jobs WHERE id = #{job_id}")
+        result = :success
+      rescue Exception => e
+        connection.exec("UPDATE rqd2_jobs SET failed_at = NOW() WHERE id = #{job_id}")
+        result = :failure
+      end
+
+      connection.exec("RELEASE SAVEPOINT rqd2_dequeue")
+      result
+    else
+      return :no_jobs
+    end
   end
 end
