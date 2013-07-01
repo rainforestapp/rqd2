@@ -8,6 +8,8 @@ class MyOtherJob
   @queue = :test2
 end
 
+ENV['DATABASE_URL'] = "postgres://postgres:@localhost/rqd2_test"
+
 RSpec.configure do |config|
   config.before(:suite) do
     # Setup Rqd2
