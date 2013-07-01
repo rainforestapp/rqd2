@@ -39,7 +39,7 @@ module Rqd2
 
     connection.exec("BEGIN")
     connection.exec("SAVEPOINT rqd2_dequeue")
-    job = connection.exec("SELECT * FROM rqd2_jobs WHERE locked_at IS NULL #{queue} LIMIT 1 FOR UPDATE").first
+    job = connection.exec("SELECT * FROM rqd2_jobs WHERE locked_at IS NULL AND enqueued_at < NOW() #{queue} LIMIT 1 FOR UPDATE").first
 
     if job
       job_id = job['id']
@@ -76,6 +76,13 @@ module Rqd2
 
     hash['attempts'] = hash['attempts'].to_i + 1
 
-    connection.exec "INSERT INTO rqd2_jobs(q_name, klass, args, attempts) VALUES('#{hash['q_name']}', '#{hash['klass']}', '#{hash['args']}', '#{hash['attempts']}')"
+    # Handle exponential backoff
+    minutes_to_wait = 2.0**hash['attempts']
+    hash['enqueued_at'] = (Time.now + (minutes_to_wait * 60)).utc
+
+    # For test purposes
+    yield(hash) if block_given?
+
+    connection.exec "INSERT INTO rqd2_jobs(q_name, klass, args, attempts, enqueued_at) VALUES('#{hash['q_name']}', '#{hash['klass']}', '#{hash['args']}', '#{hash['attempts']}', '#{hash['enqueued_at']}')"
   end
 end

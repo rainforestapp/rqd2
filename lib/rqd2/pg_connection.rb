@@ -1,4 +1,5 @@
 require 'pg'
+require 'uri'
 
 module Rqd2
   class PgConnection
@@ -26,6 +27,7 @@ module Rqd2
     end
 
     def exec(sql)
+      puts sql.inspect
       @db.exec sql
     end
 
