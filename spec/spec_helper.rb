@@ -1,5 +1,7 @@
 require 'rqd2'
 
+class MyJob; ; end;
+
 RSpec.configure do |config|
   config.before(:suite) do
     # Setup Rqd2
@@ -18,6 +20,7 @@ RSpec.configure do |config|
     connection.exec("ROLLBACK")
   end
 
+  config.filter_run_excluding(performance: true) unless ENV['PERFORMANCE'] != nil
   config.treat_symbols_as_metadata_keys_with_true_values = true
   config.run_all_when_everything_filtered = true
   config.filter_run :focus

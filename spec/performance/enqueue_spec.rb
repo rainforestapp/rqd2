@@ -1,6 +1,6 @@
 require 'benchmark'
 
-describe Rqd2 do
+describe Rqd2, performance: true do
   context "10k test" do
     before do
       puts Benchmark.measure {
