@@ -5,7 +5,6 @@ require "rqd2/job"
 require "rqd2/worker"
 require "logger"
 
-
 module Rqd2
   def self.connection
     @connection ||= Rqd2::PgConnection.new
@@ -62,5 +61,17 @@ module Rqd2
     else
       return :no_jobs
     end
+  end
+
+  def self.requeue_job(hash = {})
+    puts hash.inspect
+    raise "Missing queue name" unless hash['q_name']
+    raise "Missing attempts" unless hash['attempts']
+    raise "Missing klass" unless hash['klass']
+    raise "Missing arguments" unless hash['args']
+
+    hash['attempts'] = hash['attempts'].to_i + 1
+
+    connection.exec "INSERT INTO rqd2_jobs(q_name, klass, args, attempts) VALUES('#{hash['q_name']}', '#{hash['klass']}', '#{hash['args']}', '#{hash['attempts']}')"
   end
 end

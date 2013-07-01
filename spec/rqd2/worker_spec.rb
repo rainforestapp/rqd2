@@ -53,6 +53,16 @@ describe Rqd2::Worker do |d|
       it "process the next job in the queue" do
         Rqd2::Worker.new.run_job.should == :failure
       end
+
+      it "process jobs with multiple retries" do
+        Rqd2.should_receive(:requeue_job).twice.and_call_original
+        Rqd2::Worker.new.run_job.should == :failure
+        Rqd2::Worker.new.run_job.should == :failure
+
+        job = Rqd2.dequeue
+        job.should be_a(Hash)
+        job['attempts'].to_i.should == 2
+      end
     end
 
     it "return nil if queue is empty" do
