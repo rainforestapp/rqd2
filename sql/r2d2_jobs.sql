@@ -12,6 +12,6 @@ CREATE TABLE rqd2_jobs (
   locked_at   timestamp without time zone
 ) WITH (OIDS=FALSE);
 
-ALTER SEQUENCE rqd2_jobs_id_seq CACHE 50;
+ALTER SEQUENCE rqd2_jobs_id_seq CACHE 500;
 
 COMMIT;
