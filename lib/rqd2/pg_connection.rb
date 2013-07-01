@@ -2,21 +2,19 @@ require 'pg'
 
 module Rqd2
   class PgConnection
-
     attr_accessor :db
 
     def initialize(connection = nil)
-
       if connection.is_a?(PG::Connection)
         @db = connection
         return
       end
 
       @db = PG::Connection.new(
-        :host => '127.0.0.1',
-        :dbname => 'rqd2',
-        :user => 'postgres',
-        :password => ''
+        host:     '127.0.0.1',
+        dbname:   'rqd2_test',
+        user:     'postgres',
+        password: ''
       )
     end
 

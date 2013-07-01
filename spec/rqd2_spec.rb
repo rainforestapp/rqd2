@@ -1,5 +1,3 @@
-require 'rqd2'
-
 class MyJob; ; end;
 
 describe Rqd2 do |d|
@@ -7,10 +5,6 @@ describe Rqd2 do |d|
     connection = Rqd2::PgConnection.new()
     connection.drop_schema
     connection.setup_schema
-  end
-
-  it "2 is equal to 2" do
-    2.should eq(2)
   end
 
   it "Ensure that a pg connection is present" do
