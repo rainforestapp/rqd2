@@ -37,7 +37,7 @@ describe Rqd2 do |d|
 
       it "process any next job in all queues" do
         expect {
-          Rqd2.dequeue {}.should == :success
+          Rqd2.dequeue{}.should == :success
         }.to change{ Rqd2.size }.by(-1)
       end
 
