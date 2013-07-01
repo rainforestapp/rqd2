@@ -1,6 +1,7 @@
 require "rqd2/version"
 require 'json/ext'
 require "rqd2/pg_connection"
+require "rqd2/job"
 
 module Rqd2
   def self.connection

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 require 'rqd2'
 
 class MyJob; ; end;

@@ -1,6 +1,5 @@
 # Rqd2
-
-TODO: Write a gem description
+[![Build Status](https://travis-ci.org/rainforestapp/rqd2.png?branch=develop)](https://travis-ci.org/rainforestapp/rqd2)
 
 ## Installation
 
