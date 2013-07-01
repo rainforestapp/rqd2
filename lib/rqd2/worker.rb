@@ -18,11 +18,12 @@ module Rqd2
         end
       end
     end
-  end
 
-  def start(queue = nil)
-    while true
-      run_job(queue)
+    def start(queue = nil, stop_lambda = lambda { true })
+      while stop_lambda
+        run_job(queue)
+        sleep 0.2
+      end
     end
   end
 end
