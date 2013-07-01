@@ -48,7 +48,7 @@ module Rqd2
         connection.exec("UPDATE rqd2_jobs SET locked_at = NOW(), locked_by = #{$$} WHERE id = #{job_id}")
         job['locked_by'] = $$ # Mark as locked by the current process id
 
-        result = yield job
+        yield job
 
         connection.exec("DELETE FROM rqd2_jobs WHERE id = #{job_id}")
         result = :success
@@ -56,15 +56,15 @@ module Rqd2
         connection.exec("UPDATE rqd2_jobs SET failed_at = NOW() WHERE id = #{job_id}")
         Rqd2.logger.error e.message
         result = :failure
-      ensure
-        connection.exec("RELEASE SAVEPOINT rqd2_dequeue")
-        connection.exec("COMMIT")
       end
-
-      result
     else
-      return :no_jobs
+      result = :no_jobs
     end
+
+    connection.exec("RELEASE SAVEPOINT rqd2_dequeue")
+    connection.exec("COMMIT")
+
+    return result
   end
 
   def self.requeue_job(hash = {})
