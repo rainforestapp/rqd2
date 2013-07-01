@@ -37,33 +37,34 @@ module Rqd2
       queue = "AND q_name IN (#{queue})"
     end
 
-    connection.exec("BEGIN")
-    connection.exec("SAVEPOINT rqd2_dequeue")
-    job = connection.exec("SELECT * FROM rqd2_jobs WHERE locked_at IS NULL #{queue} LIMIT 1 FOR UPDATE").first
+    result = nil
+    connection.transaction do
+      connection.exec("SAVEPOINT rqd2_dequeue")
+      job = connection.exec("SELECT * FROM rqd2_jobs WHERE locked_at IS NULL #{queue} LIMIT 1 FOR UPDATE").first
 
-    if job
-      job_id = job['id']
+      if job
+        job_id = job['id']
 
-      begin
-        connection.exec("UPDATE rqd2_jobs SET locked_at = NOW(), locked_by = #{$$} WHERE id = #{job_id}")
-        job['locked_by'] = $$ # Mark as locked by the current process id
+        begin
+          connection.exec("UPDATE rqd2_jobs SET locked_at = NOW(), locked_by = #{$$} WHERE id = #{job_id}")
+          job['locked_by'] = $$ # Mark as locked by the current process id
 
-        yield job
+          yield job
 
-        connection.exec("DELETE FROM rqd2_jobs WHERE id = #{job_id}")
-        result = :success
-      rescue Exception => e
-        connection.exec("UPDATE rqd2_jobs SET failed_at = NOW() WHERE id = #{job_id}")
-        Rqd2.logger.error e.message
-        Rqd2.requeue_job(job)
-        result = :failure
+          connection.exec("DELETE FROM rqd2_jobs WHERE id = #{job_id}")
+          result = :success
+        rescue Exception => e
+          connection.exec("UPDATE rqd2_jobs SET failed_at = NOW() WHERE id = #{job_id}")
+          Rqd2.logger.error e.message
+          Rqd2.requeue_job(job)
+          result = :failure
+        end
+      else
+        result = :no_jobs
       end
-    else
-      result = :no_jobs
-    end
 
-    connection.exec("RELEASE SAVEPOINT rqd2_dequeue")
-    connection.exec("COMMIT")
+      connection.exec("RELEASE SAVEPOINT rqd2_dequeue")
+    end
 
     return result
   end
