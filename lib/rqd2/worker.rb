@@ -5,10 +5,20 @@ module Rqd2
 
     def run_job(queue = nil)
       Rqd2.dequeue(queue) do |job|
-        ap job
-        args = JSON.parse(job['args'])
+        begin
+          # Return if there are no jobs to run
+          return :no_jobs unless job
 
-        Kernel.const_get(job['klass']).send(:perform, *args)
+          args = JSON.parse(job['args'])
+
+          Kernel.const_get(job['klass']).send(:perform, *args)
+
+          return :success
+        rescue Exception => e # Name Later
+          Rqd2.logger.error e.message
+          Rqd2.requeue_job(job)
+          return :failure
+        end
       end
     end
   end

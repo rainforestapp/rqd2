@@ -3,6 +3,7 @@ require "json/ext"
 require "rqd2/pg_connection"
 require "rqd2/job"
 require "rqd2/worker"
+require 'logger'
 
 
 module Rqd2
@@ -15,10 +16,10 @@ module Rqd2
   end
 
   def self.logger
-    @logger ||= Logger.new(STDOUT)
+    @logger ||= ::Logger.new(STDOUT)
   end
 
-  def self.logger(l)
+  def self.logger=(l)
     @logger = l
   end
 
@@ -61,5 +62,17 @@ module Rqd2
     else
       return :no_jobs
     end
+  end
+
+  def self.requeue_job(hash = {})
+    puts hash.inspect
+    raise "Missing queue name" unless hash['q_name']
+    raise "Missing attempts" unless hash['attempts']
+    raise "Missing klass" unless hash['klass']
+    raise "Missing arguments" unless hash['args']
+
+    hash['attempts'] = hash['attempts'].to_i + 1
+
+    connection.exec "INSERT INTO rqd2_jobs(q_name, klass, args, attempts) VALUES('#{hash['q_name']}', '#{hash['klass']}', '#{hash['args']}', '#{hash['attempts']}')"
   end
 end

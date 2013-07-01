@@ -64,4 +64,18 @@ describe Rqd2 do |d|
       Rqd2.dequeue.should == :no_jobs
     end
   end
+
+  describe "#requeue" do
+    it "Ensure that we can create a job out of a hash (as if it was a failed job)" do
+      Rqd2.requeue_job({
+        'id'          => 1,
+        'q_name'      => :test,
+        'klass'       => 'MyJob',
+        'args'        => '[1,2,3]',
+        'attempts'    => 0,
+        'enqueued_at' => '',
+        'locked_at'   => ''
+      })
+    end
+  end
 end
