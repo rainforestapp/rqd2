@@ -15,8 +15,15 @@ module Rqd2
       Kernel.const_get(job['klass']).send(:perform, *args)
 
       return :success
-    rescue Exception # Name Later
+    rescue Exception => e # Name Later
+      Rqd2.logger.error e.message
       return :failure
+    end
+  end
+
+  def start(queue = nil)
+    while true
+      run_job(queue)
     end
   end
 end

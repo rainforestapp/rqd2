@@ -7,7 +7,19 @@ require "rqd2/worker"
 
 module Rqd2
   def self.connection
-    @connection ||= Rqd2::PgConnection.new()
+    @connection ||= Rqd2::PgConnection.new
+  end
+
+  def self.connection=(c)
+    @connection = Rqd2::PgConnection.new(c)
+  end
+
+  def self.logger
+    @logger ||= Logger.new(STDOUT)
+  end
+
+  def self.logger(l)
+    @logger = l
   end
 
   def self.enqueue(klass, *args)
