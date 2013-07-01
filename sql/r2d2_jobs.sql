@@ -10,7 +10,7 @@ CREATE TABLE rqd2_jobs (
   args        json not null,
   enqueued_at timestamp without time zone NOT NULL DEFAULT NOW(),
   locked_at   timestamp without time zone
-)  WITH (OIDS=FALSE);
+) WITH (OIDS=FALSE);
 
 ALTER SEQUENCE rqd2_jobs_id_seq CACHE 50;
 
