@@ -3,9 +3,19 @@ require 'rqd2'
 RSpec.configure do |config|
   config.before(:suite) do
     # Setup Rqd2
-    connection = Rqd2::PgConnection.new()
+    connection = Rqd2.connection
     connection.drop_schema
     connection.setup_schema
+  end
+
+  config.before(:each) do
+    connection = Rqd2.connection
+    connection.exec("BEGIN")
+  end
+
+  config.after(:each) do
+    connection = Rqd2.connection
+    connection.exec("ROLLBACK")
   end
 
   config.treat_symbols_as_metadata_keys_with_true_values = true
