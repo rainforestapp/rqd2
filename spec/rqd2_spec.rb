@@ -50,6 +50,7 @@ describe Rqd2 do |d|
         size = Rqd2.size
         job = Rqd2.dequeue(:test) {|job|
           job.should be_a(Hash)
+          job['locked_by'].to_i.should == $$
           job['q_name'].should == MyJob.instance_variable_get(:@queue).to_s
           job['id'].to_i.should be_> 0
         }
