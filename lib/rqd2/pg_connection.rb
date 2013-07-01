@@ -28,5 +28,12 @@ module Rqd2
       end
     end
 
+    def drop_schema
+      @db.exec "DROP TABLE IF EXISTS rqd2_jobs;"
+    end
+
+    def exec(sql)
+      @db.exec sql
+    end
   end
 end
