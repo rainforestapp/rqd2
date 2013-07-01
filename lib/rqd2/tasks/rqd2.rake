@@ -11,6 +11,6 @@ namespace :rqd2 do
     trap("INT", handler)
     trap("TERM", handler)
 
-    Rqd2::Worker.new.start(lambda { stop })
+    Rqd2::Worker.new.start(nil, lambda { stop })
   end
 end
