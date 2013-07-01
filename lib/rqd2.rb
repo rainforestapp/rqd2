@@ -3,6 +3,7 @@ require "json/ext"
 require "rqd2/pg_connection"
 require "rqd2/job"
 require "rqd2/worker"
+require "logger"
 
 
 module Rqd2
@@ -15,10 +16,10 @@ module Rqd2
   end
 
   def self.logger
-    @logger ||= Logger.new(STDOUT)
+    @logger ||= ::Logger.new(STDOUT)
   end
 
-  def self.logger(l)
+  def self.logger= (l)
     @logger = l
   end
 
@@ -46,7 +47,7 @@ module Rqd2
       begin
         connection.exec("UPDATE rqd2_jobs SET locked_at = NOW() WHERE id = #{job_id}")
 
-        result = block.call(job)
+        result = yield job
 
         connection.exec("DELETE FROM rqd2_jobs WHERE id = #{job_id}")
         result = :success

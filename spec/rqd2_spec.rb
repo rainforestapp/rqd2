@@ -47,16 +47,17 @@ describe Rqd2 do |d|
 
       it "process next job in a specific queue" do
         size = Rqd2.size
-        job = Rqd2.dequeue(:test)
+        job = Rqd2.dequeue(:test) {|job|
+          job.should be_a(Hash)
+          job['q_name'].should == MyJob.instance_variable_get(:@queue).to_s
+          job['id'].to_i.should be_> 0
+        }
 
-        job.should be_a(Hash)
-        job['q_name'].should == MyJob.instance_variable_get(:@queue).to_s
-        job['id'].to_i.should be_> 0
         Rqd2.size.should == size - 1
       end
 
       it "process next job in a specific queue" do
-        Rqd2.dequeue(:test2).should == nil
+        Rqd2.dequeue(:test2).should == :no_jobs
       end
     end
 
