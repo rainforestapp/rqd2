@@ -5,6 +5,7 @@ module Rqd2
 
     def run_job(queue = nil)
       Rqd2.dequeue(queue) do |job|
+        puts job.inspect
         args = JSON.parse(job['args'])
         Kernel.const_get(job['klass']).send(:perform, *args)
         return :success

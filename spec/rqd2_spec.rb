@@ -76,9 +76,13 @@ describe Rqd2 do |d|
         'klass'       => 'MyJob',
         'args'        => '[1,2,3]',
         'attempts'    => 0,
-        'enqueued_at' => '',
-        'locked_at'   => ''
-      })
+        'enqueued_at' => '2013-07-01 16:45:39.260967',
+        'locked_at'   => nil
+      }) { |job|
+        job['enqueued_at'].should be_> Time.now
+      }
+
+      Rqd2.dequeue.should == :no_jobs
     end
   end
 end
